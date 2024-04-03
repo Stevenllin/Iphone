@@ -19,7 +19,6 @@ function Model(props) {
       ) {
         material[1].color = new THREE.Color(props.item.color[0]);
       }
-      material[1].needsUpdate = true;
     });
   }, [materials, props.item]);
 

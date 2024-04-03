@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap/gsap-core"
+import { animateWithGsapTimeline } from '../../utils/animations';
 
 import ModelView from '../ModelView/ModelView';
 import { models, sizes } from "../../constants";
@@ -17,7 +18,9 @@ const Model = () => {
     color: ['#8F8A81', '#FFE7B9', '#6F6C64'],
     img: yellowImg,
   });
+  /** Small Cameral 的角度 */
   const [smallRotation, setSmallRotation] = useState(0);
+  /** Large Cameral 的角度 */
   const [largeRotation, setLargeRotation] = useState(0);
   
   const cameraControlSmall = useRef();
@@ -27,9 +30,28 @@ const Model = () => {
   /** Large Group */
   const large = useRef(new THREE.Group());
 
+  const tl = gsap.timeline();
+
   useGSAP(() => {
     gsap.to('#heading', { y: 0, opacity: 1, })
   }, [])
+
+  useEffect(() => {
+    /** Large -> Small */
+    if (size === 'small') {
+      animateWithGsapTimeline(tl, large, largeRotation, '#view2', '#view1', {
+        transform: 'translateX(0)',
+        duration: 2
+      })
+    }
+    /** Small -> Large */
+    if (size === 'large') {
+      animateWithGsapTimeline(tl, small, smallRotation, '#view1', '#view2', {
+        transform: 'translateX(-100%)',
+        duration: 2
+      })
+    }
+  });
 
   return (
     <section className="common-padding">
@@ -83,12 +105,12 @@ const Model = () => {
               <ul className="color-container">
                 {models.map((item, i) => (
                   <li
-                  key={i}
-                  className="w-6 h-6 rounded-full mx-2 cursor-pointer"
-                  style={{ backgroundColor: item.color[0] }}
-                  onClick={() => setModel(item)}
+                    key={i}
+                    className="w-6 h-6 rounded-full mx-2 cursor-pointer"
+                    style={{ backgroundColor: item.color[0] }}
+                    onClick={() => setModel(item)}
                   />
-                  ))}
+                ))}
               </ul>
 
               {/** 大小選擇區塊 */}
